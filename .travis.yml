@@ -1,0 +1,15 @@
+language: bash
+dist: bionic
+python: 3.6
+sudo: true
+jobs:
+  include:
+    - stage: Security check
+      before_script:
+        - sudo make install-vulnerabilities-checker
+      script:
+        - make check-vulnerabilities
+    - stage: Docker build
+      script:
+        - make docker-build-fluentd
+
