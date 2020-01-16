@@ -1,0 +1,100 @@
+# Default values for odahu-flow-authorization.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# enabled is bool trigger to activate/deactivate chart resources
+enabled: true
+
+replicaCount: 1
+
+image:
+  repository: openpolicyagent/opa
+  tag: latest-istio
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8181
+  grpc_port: 9191
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# opa overrides OpenPolicyAgent config values
+opa:
+  config:
+    query: data.odahu.allow
+    # dry-run: if true – all requests will be permitted
+    dryRun: true
+    # if decision-logs-enabled: true then info about PDP decisions will be logged in stdout of OPA container
+    decisionLogsEnabled: true
+
+# authn overrides configuration of envoy.filters.http.jwt_authn http filter
+authn:
+  enabled: true
+  remoteJwksEnabled: false
+  oidcIssuer: ""
+  oidcJwks: ""
+  oidcHost: ""
+  oidcPort: 443
+  localJwks: ""
+# authz overrides configuration of envoy.ext_authz http filter
+authz:
+  enabled: true
+  # targetUri defines external authorization service
+  targetUri: ""
+  activationSelector: "odahu-flow-authorization"
+
+
+
