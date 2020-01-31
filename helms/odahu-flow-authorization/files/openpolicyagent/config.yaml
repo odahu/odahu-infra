@@ -1,8 +1,0 @@
-decision_logs:
-  console: true
-plugins:
-  envoy_ext_authz_grpc:
-    addr: :9191
-    query: data.odahu.allow
-    dry-run: true
-    enable-reflection: true
