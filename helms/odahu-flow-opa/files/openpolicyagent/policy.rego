@@ -42,10 +42,10 @@ user_roles[role]{
 
 parsed_input = {
 	"action": input.attributes.request.http.method,
-    "resource": input.attributes.request.http.path,
-    "user": {
-    	"roles": user_roles
-    }
+  "resource": input.attributes.request.http.path,
+  "user": {
+    "roles": user_roles
+  }
 }
 
 
@@ -61,5 +61,3 @@ allow {
     re_match(action, parsed_input.action)
     re_match(resource, parsed_input.resource)
 }
-
-

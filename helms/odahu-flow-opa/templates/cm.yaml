@@ -18,6 +18,10 @@ data:
           query: data.odahu.allow
           dry-run: {{ .Values.opa.config.dryRun }}
           enable-reflection: true
-  policy.rego: |
-    {{- .Files.Get "files/openpolicyagent/policy.rego" | nindent 8 }}
+
+  {{- range $key, $value := .Values.opa.policies}}
+  {{- $key | nindent 2 }}: |
+    {{- $value | nindent 4 }}
+  {{- end }}
+
 {{- end }}

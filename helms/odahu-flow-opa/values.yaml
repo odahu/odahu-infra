@@ -79,6 +79,11 @@ opa:
     dryRun: true
     # if decision-logs-enabled: true then info about PDP decisions will be logged in stdout of OPA container
     decisionLogsEnabled: true
+    # list of rego policies encoded in base64
+  policies: {}
+#  policies:
+#    file1: ".rego policy content"
+#    file2: ".rego policy content"
 
 # authn overrides configuration of envoy.filters.http.jwt_authn http filter
 authn:
