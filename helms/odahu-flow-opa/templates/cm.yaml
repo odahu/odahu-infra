@@ -21,7 +21,7 @@ data:
 
   {{- range $key, $value := .Values.opa.policies}}
   {{- $key | nindent 2 }}: |
-    {{- $value | nindent 4 }}
+    {{- $value | b64dec | nindent 4 }}
   {{- end }}
 
 {{- end }}
