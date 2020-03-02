@@ -2,6 +2,14 @@ name: odahu-flow-monitoring
 version: 0.0.1
 appVersion: 1.7.1
 description: odahuflow monitoring
+dependencies:
+  - name: grafana
+    alias: odahuflow-grafana
+    version: "4.0.4"
+    repository: "@stable"
+  - name: prometheus-operator
+    version: "8.7.0"
+    repository: "@stable"
 keywords:
 - ML
 maintainers:
