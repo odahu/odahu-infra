@@ -6,10 +6,10 @@ dependencies:
   - name: grafana
     alias: odahuflow-grafana
     version: "4.0.4"
-    repository: "@stable"
+    repository: "https://kubernetes-charts.storage.googleapis.com"
   - name: prometheus-operator
     version: "8.7.0"
-    repository: "@stable"
+    repository: "https://kubernetes-charts.storage.googleapis.com"
 keywords:
 - ML
 maintainers:
