@@ -1,4 +1,5 @@
 name: odahu-flow-monitoring
+apiVersion: v2
 version: 0.0.1
 appVersion: 1.7.1
 description: odahuflow monitoring
@@ -6,9 +7,11 @@ dependencies:
   - name: grafana
     alias: odahuflow-grafana
     version: "4.0.4"
+    type: application
     repository: "https://kubernetes-charts.storage.googleapis.com"
   - name: prometheus-operator
     version: "8.7.0"
+    type: application
     repository: "https://kubernetes-charts.storage.googleapis.com"
 keywords:
 - ML
