@@ -76,7 +76,7 @@ opa:
   config:
     query: data.odahu.allow
     # dry-run: if true – all requests will be permitted
-    dryRun: true
+    dryRun: false
     # if decision-logs-enabled: true then info about PDP decisions will be logged in stdout of OPA container
     decisionLogsEnabled: true
     # list of rego policies encoded in base64

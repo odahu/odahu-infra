@@ -15,10 +15,13 @@ data:
     plugins:
       envoy_ext_authz_grpc:
           addr: :9191
-          query: data.odahu.allow
+          query: data.odahu.core.allow
           dry-run: {{ .Values.opa.config.dryRun }}
           enable-reflection: true
-
+  {{- range $path, $content := .Files.Glob "policies/*.rego" }}
+  {{ base $path }}: |
+    {{ $content | toString | nindent 4 }}
+  {{ end }}
   {{- range $key, $value := .Values.opa.policies}}
   {{- $key | nindent 2 }}: |
     {{- $value | b64dec | nindent 4 }}
