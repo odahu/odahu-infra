@@ -21,6 +21,8 @@ spec:
           oidc:
             issuer: {{ .Values.authn.oidcIssuer }}
             payload_in_metadata: jwt_payload
+            # Forward a JWT to a service
+            forward: true
             {{- if .Values.authn.localJwks }}
             local_jwks:
               inline_string: '{{ .Values.authn.localJwks }}'
