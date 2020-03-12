@@ -8,6 +8,7 @@ permissions := {
     	[".*", "api/v1/model/packaging.*"],
     	[".*", "api/v1/model/training.*"],
     	["GET", "api/v1/configuration.*"],
+    	["GET", "api/v1/user.*"],
     	["GET", "api/v1/connection.*"],
     	["GET", "api/v1/packaging/integration.*"],
     	["GET", "api/v1/toolchain/integration.*"]
