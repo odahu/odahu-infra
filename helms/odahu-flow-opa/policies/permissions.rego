@@ -4,19 +4,27 @@ import data.odahu.roles
 
 permissions := {
 	roles.data_scientist: [
-    	[".*", "api/v1/model/deployment.*"],
-    	[".*", "api/v1/model/packaging.*"],
-    	[".*", "api/v1/model/training.*"],
-    	["GET", "api/v1/configuration.*"],
-    	["GET", "api/v1/user.*"],
-    	["GET", "api/v1/connection.*"],
-    	["GET", "api/v1/packaging/integration.*"],
-    	["GET", "api/v1/toolchain/integration.*"]
+    	[".*", "^/api/v1/model/deployment.*"],
+    	[".*", "^/api/v1/model/packaging.*"],
+    	[".*", "^/api/v1/model/training.*"],
+    	["GET", "^/api/v1/configuration.*"],
+    	["GET", "^/api/v1/connection/*[a-zA-Z0-9-]*/*$"],
+    	["GET", "^/api/v1/packaging/integration.*"],
+    	["GET", "^/api/v1/user.*"],
+    	["GET", "^/api/v1/toolchain/integration.*"],
+    	["GET", "^/health$"]
     ],
   roles.admin : [
       [".*", ".*"]
   ],
   roles.viewer : [
-      ["GET", ".*"]
+    	["GET", "^/api/v1/model/deployment.*"],
+    	["GET", "^/api/v1/model/packaging.*"],
+    	["GET", "^/api/v1/model/training.*"],
+    	["GET", "^/api/v1/configuration.*"],
+    	["GET", "^/api/v1/connection/*[a-zA-Z0-9-]*/*$"],
+    	["GET", "^/api/v1/packaging/integration.*"],
+    	["GET", "^/api/v1/toolchain/integration.*"],
+    	["GET", "^/health$"]
   ]
 }
