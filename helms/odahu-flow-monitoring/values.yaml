@@ -409,7 +409,8 @@ odahuflow-grafana:
   fullnameOverride: grafana
   image:
     tag: 6.4.4
-
+  deploymentStrategy:
+    type: Recreate
   adminUser: grafana_admin
   adminPassword: grafana_password
   resources:
