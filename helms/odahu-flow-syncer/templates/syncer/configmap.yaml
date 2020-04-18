@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "syncer.fullname" . }}-storage-sync
+  labels:
+    app: {{ template "syncer.fullname" . }}
+    chart: {{ template "syncer.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  storage-sync.sh: |
+    #!/bin/sh -e
+    while true
+    do
+      {{- if eq .Values.sync.target "gcs"}}
+      rclone sync -vv storage:{{ .Values.sync.gcs.bucket }}{{ .Values.sync.subPath }} /data
+      {{- end }}
+      {{- if eq .Values.sync.target "s3" }}
+      rclone sync -vv storage:{{ .Values.sync.s3.bucket }}{{ .Values.sync.subPath }} /data
+      {{- end }}
+      sleep {{ .Values.sync.interval }}
+    done
+  rclone.conf: |
+    [storage]
+    {{- if eq .Values.sync.target "gcs"}}
+    type = google cloud storage
+    object_acl = projectPrivate
+    bucket_acl = projectPrivate
+    bucket_policy_only = true
+    location = {{ .Values.sync.gcs.region }}
+    {{- end }}
+    {{- if eq .Values.sync.target "s3" }}
+    type = s3
+    provider = AWS
+    env_auth = true
+    region = {{ .Values.sync.s3.region }}
+    acl = bucket-owner-full-control
+    server_side_encryption = AES256
+    storage_class = STANDARD
+    {{- end }}
+

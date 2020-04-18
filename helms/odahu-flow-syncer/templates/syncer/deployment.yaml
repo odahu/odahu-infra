@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "syncer.fullname" . }}
+  labels:
+    app: {{ template "syncer.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "syncer.fullname" . }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 100%
+  template:
+    metadata:
+      {{- if and (eq .Values.sync.target "s3") (eq .Values.sync.s3.authorization "iam" ) }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+        iam.amazonaws.com/role: {{ .Values.sync.s3.customIAMRole }}
+      {{- end }}
+      {{- if and (eq .Values.sync.target "gcs") (eq .Values.sync.gcs.authorization "sa" ) }}
+      annotations:
+        accounts.google.com/service-account: {{ ternary .Values.sync.gcs.customSA "default" (hasKey .Values.sync.gcs "customSA") }}
+        accounts.google.com/scopes: "https://www.googleapis.com/auth/devstorage.read_write"
+      {{- end }}
+      labels:
+        app: {{ template "syncer.fullname" . }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: syncer
+          image: rclone/rclone:{{ .Values.rclone.version }}
+          imagePullPolicy: Always
+          resources:
+            {{- toYaml .Values.rclone.resources | nindent 12 }}
+          command:
+            - /usr/local/sync/storage-sync.sh
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: storage-sync-script
+              mountPath: /usr/local/sync
+            - name: storage-sync-rclone-conf
+              mountPath: /config/rclone
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.sync.volume }}
+        - name: storage-sync-script
+          configMap:
+            name: {{ template "syncer.fullname" . }}-storage-sync
+            items:
+            - key: storage-sync.sh
+              path: storage-sync.sh
+              mode: 0755
+        - name: storage-sync-rclone-conf
+          configMap:
+            name: {{ template "syncer.fullname" . }}-storage-sync
+            items:
+            - key: rclone.conf
+              path: rclone.conf
+              mode: 0644
