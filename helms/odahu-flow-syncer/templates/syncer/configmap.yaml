@@ -18,6 +18,9 @@ data:
       {{- if eq .Values.sync.target "s3" }}
       rclone sync -vv storage:{{ .Values.sync.s3.bucket }}{{ .Values.sync.subPath }} /data
       {{- end }}
+      {{- if eq .Values.sync.target "azureblob" }}
+      rclone sync -vv storage:{{ .Values.sync.azureblob.bucket }}{{ .Values.sync.subPath }} /data
+      {{- end }}
       sleep {{ .Values.sync.interval }}
     done
   rclone.conf: |
@@ -38,4 +41,6 @@ data:
     server_side_encryption = AES256
     storage_class = STANDARD
     {{- end }}
-
+    {{- if eq .Values.sync.target "azureblob" }}
+    type = azureblob
+    {{- end }}

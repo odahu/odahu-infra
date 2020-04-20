@@ -36,6 +36,19 @@ spec:
         - name: syncer
           image: rclone/rclone:{{ .Values.rclone.version }}
           imagePullPolicy: Always
+          env:
+          {{- if and (eq .Values.sync.target "azureblob") (eq .Values.sync.azureblob.authorization "accesskey") }}
+          - name: RCLONE_AZUREBLOB_ACCOUNT
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Release.Name }}-secret"
+                key: AzureStorageAccount
+          - name: RCLONE_AZUREBLOB_KEY
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Release.Name }}-secret"
+                key: AzureStorageAccessKey
+          {{- end }}
           resources:
             {{- toYaml .Values.rclone.resources | nindent 12 }}
           command:
