@@ -1,0 +1,96 @@
+nameOverride: ""
+fullnameOverride: ""
+
+rclone:
+  # Version of Rclone
+  version: "1.51.0"
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "64Mi"
+
+sync:
+  # Synchronization interval (seconds)
+  interval: 30
+
+  # Target PersistentVolumeClaim to synchronize to
+  volume: "storage"
+
+  # Target Storage subpath to synchronize from
+  subPath: ""
+
+  # What storage should be synchronized
+  # Valid values:
+  # s3 - AWS S3
+  # gcs - Google Cloud Storage
+  # azureblob - Azure Blob Storage
+  target: "s3"
+
+  # Detail configuration for GCS
+  gcs:
+    # Type of authorization on GCS
+    # Valid values are:
+    # - sa - requires k8s-gke-service-account-assigner to be installed in cluster,
+    #        adds annotation "accounts.google.com/service-account" to FluentD Pod
+    #        value of annotation could be specified in .feedback.output.gcs.customSA
+    authorization: "sa"
+
+    # Custom name for Service Account for sa-based authorization mode of FluentD
+    # For details see authorization directive above
+    # By default "<.ingress.globalDomain>-<.Release.Namespace>-collector-sa" is used
+    # Type: string
+    # customSA: ~
+
+    # GCS bucket name
+    # Type: string
+    bucket: "odahuFlow-test-store"
+
+    # GCS bucket region
+    # Type: string
+    region: "us-east1"
+
+  # Detail configuration for storing on S3
+  s3:
+    # Type of authorization on S3
+    # Valid values are:
+    # - iam - requires kube2iam to be installed in cluster,
+    #         adds annotation "iam.amazonaws.com/role" to FluentD Pod
+    #         value of annotation could be specified in .feedback.output.s3.customIAMRole
+    authorization: "iam"
+
+    # Custom name for IAM for iam-based authorization mode of FluentD
+    # For details see authorization directive above
+    # By default "<.ingress.globalDomain>-<.Release.Namespace>-collector-role" is used
+    # Type: string
+    #customIAMRole: ~
+
+    # S3 bucket name
+    # Type: string
+    bucket: "odahuFlow-test-store"
+
+    # S3 region
+    # Type: string
+    region: ~
+
+  # Detail configuration for storing data in Azure Blob storage
+  azureblob:
+    # Type of authorization in Azure Blob storage
+    # Valid values are:
+    #   - accesskey
+    authorization: "accesskey"
+
+    # Name of Azure Storage Account
+    # Type: string
+    #AzureStorageAccount: ~
+
+    # One of two keys that used to authorize access to Azure storage account
+    # Type: string
+    #AzureStorageAccessKey: ~
+
+    # Azure Blob container name
+    # Type: string
+    bucket: ~
