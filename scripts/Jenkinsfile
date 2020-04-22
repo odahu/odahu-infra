@@ -105,6 +105,15 @@ pipeline {
             }
         }
 
+        stage("Build Elasticsearch Docker image") {
+            steps {
+                script {
+                    cicdLibrary.buildDockerImage('odahu-flow-logstash-oss', 'containers/logstash-oss')
+                    cicdLibrary.uploadDockerImage('odahu-flow-logstash-oss', env.param_stable_release.toBoolean() && env.param_dockerhub_publishing_enabled.toBoolean())
+                }
+            }
+        }
+
         stage('Package and upload helm charts') {
             steps {
                 script {
