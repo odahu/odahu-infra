@@ -1,0 +1,106 @@
+# Version of Fluentd
+# By default .Chart.AppVersion version is used
+# Type: string
+# fluentdVersion: "1.0"
+
+# Docker images registry
+# This registry will be used for automatic docker image name deduction based on OdahuFlow naming for images
+# Each image could be overridden manually in .<service>.image, please see .edi root section or other
+# Type: string
+imagesRegistry: odahu/
+
+fluentd:
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+imagePullSecrets:
+  - name: repo-json-key
+
+nameOverride: ""
+fullnameOverride: ""
+
+output:
+  # Where feedback data should be stored
+  # Valid values:
+  # s3 - AWS S3
+  # gcs - Google Cloud Storage
+  # azureblob - Azure Blob Storage
+  target: "s3"
+
+  # Detail configuration for storing on GCS
+  gcs:
+    # Type of authorization on GCS
+    # Valid values are:
+    # - sa - requires k8s-gke-service-account-assigner to be installed in cluster,
+    #        adds annotation "accounts.google.com/service-account" to FluentD Pod
+    #        value of annotation could be specified in .feedback.output.gcs.customSA
+    # - keyfile - requires Google Cloud Service Account with GCS permissions.
+    authorization: "sa"
+
+    # Custom name for Service Account for sa-based authorization mode of FluentD
+    # For details see authorization directive above
+    # By default "<.ingress.globalDomain>-<.Release.Namespace>-collector-sa" is used
+    # Type: string
+    # customSA: ~
+
+    # GCS bucket name
+    # Type: string
+    bucket: "odahuFlow-test-store"
+
+  # Storage type
+  # Type: string
+  # Valid values:
+  # - gzip (default)
+  # - json
+  # - text
+  storeAs: "text"
+
+  # Storage format
+  # Type: string
+  # Valid values:
+  # - out_file (default)
+  # - json
+  # - ltsv
+  # - single_value
+  format: "json"
+
+  # Directory for data storing
+  # Type: string
+  path: "logs/%Y/%m/%d/#{ENV['FLUENTD_NODE_NAME']}/containers/${tag}"
+
+  # Format of file names
+  # Type: string
+  objectKeyFormat: "%{path}/%{index}.%{file_extension}"
+
+  # Slicing format
+  # Type: string
+  timeSliceFormat: "%Y%m%d%H"
+
+  # Slicing wait time
+  # Type: string
+  timeSliceWait: "5m"
+
+  # Buffering (chunking)
+  buffering:
+    # Chunks length (window size)
+    # Type: string
+    timekey: 1m
+
+    # Delay for flush (after end of window)
+    # Type: string
+    timekeyWait: 0s
+
+    # Temporary buffering location
+    # Type: string
+    path: /tmp
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: fluentd
