@@ -394,7 +394,7 @@
               "expr": "sum(container_memory_usage_bytes{cluster=\"$cluster\", namespace=\"$namespace\", container_name!=\"\"}) by (pod_name)",
               "format": "time_series",
               "intervalFactor": 2,
-              "legendFormat": "{{`{{pod_name}}`}}",
+              "legendFormat": "{{pod_name}}",
               "legendLink": null,
               "step": 10
             }
