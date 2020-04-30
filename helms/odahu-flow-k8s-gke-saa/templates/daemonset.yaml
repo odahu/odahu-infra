@@ -23,6 +23,9 @@ spec:
     spec:
       hostNetwork: true
       serviceAccountName: {{ template "k8s-gke-saa.serviceAccountName" . }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           name: {{ template "k8s-gke-saa.fullname" . }}
