@@ -12,12 +12,20 @@ spec:
     metadata:
       labels:
         {{- include "fluentd-daemonset.helm-labels" (dict "component" "fluentd-daemonset" "root" .) | nindent 8 }}
+      {{- if and (eq .Values.output.target "s3") (eq .Values.output.s3.authorization "iam" ) }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+        iam.amazonaws.com/role: {{ .Values.output.s3.customIAMRole }}
+      {{- end }}
       {{- if and (eq .Values.output.target "gcs") (eq .Values.output.gcs.authorization "sa" ) }}
       annotations:
         accounts.google.com/service-account: {{ ternary .Values.output.gcs.customSA "default" (hasKey .Values.output.gcs "customSA") }}
         accounts.google.com/scopes: "https://www.googleapis.com/auth/devstorage.read_write"
       {{- end }}
     spec:
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
@@ -25,21 +33,32 @@ spec:
       {{- if .Values.serviceAccount.create }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
       {{- end }}
-      tolerations:
-      - effect: NoSchedule
-        operator: Exists
       containers:
       - name: fluentd
-        env:
-        - name: FLUENTD_NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
         command: ["fluentd"]
         args: ["-c", "/opt/fluent-config/fluent.conf"]
         image: "{{ include "fluentd.image-name" (dict "root" . "service" .Values.fluentd "tpl" "%sodahu-flow-fluentd:%s") }}"
         resources:
           {{- toYaml .Values.fluentd.resources | nindent 10 }}
+        env:
+        - name: FLUENTD_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        {{- if eq .Values.output.target "azureblob" }}
+        {{- if eq .Values.output.azureblob.authorization "sastoken" }}
+        - name: AZURE_STORAGE_ACCOUNT
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-secret"
+              key: AzureStorageAccount
+        - name: AZURE_STORAGE_SAS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-secret"
+              key: AzureStorageSasToken
+        {{- end }}
+        {{- end }}
         volumeMounts:
         - name: fluentd-config
           mountPath: /opt/fluent-config
