@@ -28,6 +28,7 @@ RUN apk update \
         ruby-dev gnupg zlib-dev \
  && gem install fluent-plugin-s3 -v 1.1.11 \
  && gem install fluent-plugin-gcs -v 0.4.0 \
+ && gem install fluent-plugin-kubernetes_metadata_filter -v 2.4.5 \
  && git ${GIT_PARAMS} ${REPO_URL} /tmp/build-azure \
  && cd /tmp/build-azure && gem build *.gemspec && gem install *.gem \
  && apk del .build-deps \
