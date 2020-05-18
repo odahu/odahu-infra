@@ -1,32 +1,39 @@
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
     knative.dev/crd-install: "true"
-  name: images.caching.internal.knative.dev
-spec:
-  group: caching.internal.knative.dev
-  names:
-    categories:
-      - knative-internal
-      - caching
-    kind: Image
-    plural: images
-    shortNames:
-      - img
-    singular: image
-  scope: Namespaced
-  subresources:
-    status: {}
-  version: v1alpha1
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  labels:
-    knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+    serving.knative.dev/release: "v0.11.2"
   name: certificates.networking.internal.knative.dev
 spec:
   additionalPrinterColumns:
@@ -56,8 +63,9 @@ apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
+    duck.knative.dev/podspecable: "true"
     knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+    serving.knative.dev/release: "v0.11.2"
   name: configurations.serving.knative.dev
 spec:
   additionalPrinterColumns:
@@ -98,13 +106,37 @@ spec:
     - name: v1
       served: true
       storage: false
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   labels:
     knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+  name: images.caching.internal.knative.dev
+spec:
+  group: caching.internal.knative.dev
+  names:
+    categories:
+      - knative-internal
+      - caching
+    kind: Image
+    plural: images
+    shortNames:
+      - img
+    singular: image
+  scope: Namespaced
+  subresources:
+    status: {}
+  version: v1alpha1
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    knative.dev/crd-install: "true"
+    serving.knative.dev/release: "v0.11.2"
   name: ingresses.networking.internal.knative.dev
 spec:
   additionalPrinterColumns:
@@ -138,7 +170,7 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+    serving.knative.dev/release: "v0.11.2"
   name: metrics.autoscaling.internal.knative.dev
 spec:
   additionalPrinterColumns:
@@ -167,7 +199,7 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+    serving.knative.dev/release: "v0.11.2"
   name: podautoscalers.autoscaling.internal.knative.dev
 spec:
   additionalPrinterColumns:
@@ -208,7 +240,7 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+    serving.knative.dev/release: "v0.11.2"
   name: revisions.serving.knative.dev
 spec:
   additionalPrinterColumns:
@@ -259,7 +291,7 @@ metadata:
   labels:
     duck.knative.dev/addressable: "true"
     knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+    serving.knative.dev/release: "v0.11.2"
   name: routes.serving.knative.dev
 spec:
   additionalPrinterColumns:
@@ -303,8 +335,9 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     duck.knative.dev/addressable: "true"
+    duck.knative.dev/podspecable: "true"
     knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+    serving.knative.dev/release: "v0.11.2"
   name: services.serving.knative.dev
 spec:
   additionalPrinterColumns:
@@ -355,7 +388,7 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     knative.dev/crd-install: "true"
-    serving.knative.dev/release: "v0.10.0"
+    serving.knative.dev/release: "v0.11.2"
   name: serverlessservices.networking.internal.knative.dev
 spec:
   additionalPrinterColumns:
@@ -391,3 +424,57 @@ spec:
     - name: v1alpha1
       served: true
       storage: true
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
+
+---
