@@ -1,0 +1,37 @@
+{{- if .Values.kibanaData }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-data
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+data:
+{{- range $path, $config := .Values.kibanaData }}
+  {{ $path }}: |
+{{ $config | indent 4 -}}
+{{- end -}}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-script
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name | quote }}
+data:
+  import.sh: |
+    #!/usr/bin/env bash
+
+    set -e
+
+    while [[ "$(curl -XGET -s -o /dev/null -w "%{http_code}" "${KIBANA_URL}/app/kibana")" -ne 200 ]]; do
+      sleep 1 && echo "Waiting for Kibana..."
+    done
+
+    for datafile in $(ls /opt/kibana-import-data/*.ndjson); do
+      echo "Processing ${datafile}"
+      curl -XPOST -s "${KIBANA_URL}/api/saved_objects/_import?overwrite=true" -H "kbn-xsrf: true" \
+        --form file=@${datafile}
+    done

@@ -1,3 +1,3 @@
 # odahu-infra
 
-This repository contains Helm v2 charts for additional ODAHU services and Dockerfile for Fluentd container.
+This repository contains Helm charts and Dockerfiles for additional ODAHU services.
