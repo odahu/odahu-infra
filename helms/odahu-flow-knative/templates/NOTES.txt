@@ -1,3 +1,4 @@
 Took serving-core.yaml
 Stripped off name space creation
 Adjusted namespace names
+Added  progressDeadline: "300" to config-deployment to support nodepool scale up
