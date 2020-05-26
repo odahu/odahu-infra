@@ -1,0 +1,11 @@
+apiVersion: v1
+appVersion: 7.6.2
+description: Kibana ndjson resources uploader
+keywords:
+- odahu-flow
+- logs
+maintainers:
+- email: helm-charts@odahu.org
+  name: ODAHU Team
+name: odahu-flow-kibana-loader
+version: 0.0.1
