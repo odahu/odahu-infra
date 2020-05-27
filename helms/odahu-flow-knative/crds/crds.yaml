@@ -70,12 +70,6 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  conversion:
-    strategy: Webhook
-    webhookClientConfig:
-      service:
-        name: webhook
-        namespace: knative-serving
   additionalPrinterColumns:
     - name: LatestCreated
       type: string
@@ -237,12 +231,6 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  conversion:
-    strategy: Webhook
-    webhookClientConfig:
-      service:
-        name: webhook
-        namespace: knative-serving
   additionalPrinterColumns:
     - name: Config Name
       type: string
@@ -300,12 +288,6 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  conversion:
-    strategy: Webhook
-    webhookClientConfig:
-      service:
-        name: webhook
-        namespace: knative-serving
   additionalPrinterColumns:
     - name: URL
       type: string
@@ -406,12 +388,6 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  conversion:
-    strategy: Webhook
-    webhookClientConfig:
-      service:
-        name: webhook
-        namespace: knative-serving
   additionalPrinterColumns:
     - name: URL
       type: string
