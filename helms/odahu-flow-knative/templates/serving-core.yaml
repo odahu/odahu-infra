@@ -215,6 +215,8 @@ spec:
               cpu: 1000m
               memory: 600Mi
           env:
+            - name: KUBERNETES_MIN_VERSION
+              value: "1.14.10"
             - name: GOGC
               value: "500"
             - name: POD_NAME
@@ -318,6 +320,8 @@ spec:
               cpu: 300m
               memory: 400Mi
           env:
+            - name: KUBERNETES_MIN_VERSION
+              value: "1.14.10"
             - name: SYSTEM_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -408,6 +412,8 @@ spec:
               cpu: 1000m
               memory: 1000Mi
           env:
+            - name: KUBERNETES_MIN_VERSION
+              value: "1.14.10"
             - name: SYSTEM_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -480,6 +486,8 @@ spec:
               cpu: 500m
               memory: 500Mi
           env:
+            - name: KUBERNETES_MIN_VERSION
+              value: "1.14.10"
             - name: SYSTEM_NAMESPACE
               valueFrom:
                 fieldRef:
