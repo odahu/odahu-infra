@@ -91,7 +91,7 @@ metadata:
   labels:
     serving.knative.dev/release: "v0.15.0"
 data:
-  progressDeadline: {{ .Values.progressDeadline  }}
+  progressDeadline: {{ .Values.progressDeadline | quote }}
 
 ---
 
