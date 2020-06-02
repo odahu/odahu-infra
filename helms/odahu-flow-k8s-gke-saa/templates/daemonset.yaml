@@ -1,8 +1,3 @@
-    app.kubernetes.io/name: {{ template "kube2iam.name" . }}
-    helm.sh/chart: {{ template "kube2iam.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-
 ---
 apiVersion: apps/v1
 kind: DaemonSet
