@@ -1,5 +1,5 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ template "k8s-gke-saa.fullname" . }}
@@ -9,6 +9,9 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
 spec:
+  selector:
+    matchLabels:
+      app: {{ template "k8s-gke-saa.fullname" . }}
   template:
     metadata:
       labels:
