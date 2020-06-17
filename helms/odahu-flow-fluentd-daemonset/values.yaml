@@ -16,8 +16,7 @@ fluentd:
     requests:
       memory: 100Mi
 
-imagePullSecrets:
-  - name: repo-json-key
+imagePullSecrets: []
 
 nameOverride: ""
 fullnameOverride: ""
