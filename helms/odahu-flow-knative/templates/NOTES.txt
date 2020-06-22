@@ -1,1 +1,5 @@
-1. Get the application URL by running these commands:
+The Knative Operator has been installed. Check its status by running:
+  kubectl --namespace {{ template "knative-operator.namespace" . }} get pods -l "release={{ $.Release.Name }}"
+
+Visit https://knative.dev/docs/install/knative-with-operators for instructions on how to create and configure
+Knative components using the Operator CRDs.

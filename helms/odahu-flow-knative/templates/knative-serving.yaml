@@ -1,0 +1,14 @@
+{{- if and .Values.knativeOperator.enabled .Values.knative.serving.create }}
+apiVersion: operator.knative.dev/v1alpha1
+kind: KnativeServing
+metadata:
+  name: knative-serving
+  namespace: {{ template "knative-serving.namespace" . }}
+  labels:
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+{{- if .Values.knative.serving.spec }}
+spec:
+  {{- toYaml .Values.knative.serving.spec | nindent 2 }}
+{{- end }}
+{{- end }}
