@@ -150,6 +150,8 @@ spec:
           # This is the Go import path for the binary that is containerized
           # and substituted here.
           image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/webhook:v0.13.2@sha256:cd3c83221f860746c9d757a6750f762a8a7351a7513acfc1bfc661ba2f265764
+          resources:
+            {{- toYaml .Values.webhook.resources | nindent 12 }}
           env:
             - name: SYSTEM_NAMESPACE
               valueFrom:
