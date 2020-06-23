@@ -25,6 +25,16 @@ knativeOperator:
   image: gcr.io/knative-releases/knative.dev/operator/cmd/operator@sha256:e94d8d1c739205b5d5929e5cd49f1e1d4007a76e1aae0a6988ce15f21341819e
   pullPolicy: IfNotPresent
 
+  # Clean up custom resources created by Knative operator
+  cleanupCustomResources:
+    enabled: true
+
+    # Image used in custom resources cleaning up job
+    jobImage:
+      repository: k8s.gcr.io/hyperkube-amd64
+      tag: v1.16.10
+      pullPolicy: IfNotPresent
+
   serviceAccount:
     create: true
     name: ""

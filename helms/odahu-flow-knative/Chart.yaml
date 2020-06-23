@@ -1,11 +1,13 @@
 name: odahu-flow-knative
-version: 0.2.0
-appVersion: 0.15.0
 description: Knative Operator chart
 keywords:
 - Knative
 - odahu-flow  
 - ML
 maintainers:
-- email: helm-charts@odahu.org
-  name: ODAHU Team
+- name: ODAHU Team
+  url: https://odahu.org
+version: 0.2.0
+appVersion: 0.15.0
+apiVersion: v2
+kubeVersion: ">= 1.16.0-0"
