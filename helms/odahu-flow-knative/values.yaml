@@ -165,7 +165,7 @@ knativeOperator:
 knative:
   serving:
     # Create KnativeServing component or not
-    create: true
+    create: false
 
     # Override namespace for Knative Serving components
     namespaceOverride: ""
