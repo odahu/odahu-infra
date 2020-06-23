@@ -1,0 +1,70 @@
+{{- if and .Values.knativeOperator.enabled .Values.knativeOperator.rbac.create }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: knative-serving-operator
+  labels:
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: knative-serving-operator
+subjects:
+- kind: ServiceAccount
+  name: {{ template "knative-operator.serviceAccountName" . }}
+  namespace: {{ template "knative-operator.namespace" . }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: knative-serving-operator-aggregated
+  labels:
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: knative-serving-operator-aggregated
+subjects:
+- kind: ServiceAccount
+  name: {{ template "knative-operator.serviceAccountName" . }}
+  namespace: {{ template "knative-operator.namespace" . }}
+
+---
+# TODO: Consider restriction of non-aggregated role to knativeeventing namespaces.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: knative-eventing-operator
+  labels:
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: knative-eventing-operator
+subjects:
+- kind: ServiceAccount
+  name: {{ template "knative-operator.serviceAccountName" . }}
+  namespace: {{ template "knative-operator.namespace" . }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: knative-eventing-operator-aggregated
+  labels:
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: knative-eventing-operator-aggregated
+subjects:
+- kind: ServiceAccount
+  name: {{ template "knative-operator.serviceAccountName" . }}
+  namespace: {{ template "knative-operator.namespace" . }}
+{{- end }}

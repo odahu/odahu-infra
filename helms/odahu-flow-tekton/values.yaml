@@ -1,5 +1,4 @@
 operator:
-  image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/controller@sha256:ebc6f768038aa3e31f3d7acda4bc26bf1380b5f2a132f0618181cacc30e295fa
   resources:
     limits:
       cpu: 400m
@@ -9,7 +8,6 @@ operator:
       memory: 200Mi
 
 webhook:
-  image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/webhook@sha256:7215a25a58c074bbe30a50db93e6a47d2eb5672f9af7570a4e4ab75e50329131
   resources:
     limits:
       cpu: 400m

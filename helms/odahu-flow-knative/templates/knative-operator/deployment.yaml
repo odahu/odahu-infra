@@ -1,0 +1,51 @@
+{{- if .Values.knativeOperator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "knative-operator.fullname" . }}-operator
+  namespace: {{ template "knative-operator.namespace" . }}
+  labels:
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "knative-operator.name" . }}-operator
+      release: {{ $.Release.Name | quote }}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: {{ template "knative-operator.name" . }}-operator
+        {{- include "knative-operator.labels" . | indent 8 }}
+        {{- if .Values.knativeOperator.podLabels }}
+        {{ toYaml .Values.knativeOperator.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "knative-operator.serviceAccountName" . }}
+      containers:
+      - name: {{ template "knative-operator.fullname" . }}-operator
+        image: {{ .Values.knativeOperator.image }}
+        imagePullPolicy: {{ .Values.knativeOperator.pullPolicy }}
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SYSTEM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: METRICS_DOMAIN
+          value: knative.dev/operator
+        - name: CONFIG_LOGGING_NAME
+          value: config-logging
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: config-observability
+        ports:
+        - name: metrics
+          containerPort: 9090
+        resources: {{ toYaml .Values.knativeOperator.podResources | nindent 10 }}
+{{- end }}

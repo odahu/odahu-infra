@@ -1,176 +1,408 @@
+---
+# Copyright 2019 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: tekton-pipelines
+  labels:
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
 spec:
-  allowPrivilegeEscalation: false
-  fsGroup:
-    ranges:
-      - max: 65535
-        min: 1
-    rule: MustRunAs
-  hostIPC: false
-  hostNetwork: false
-  hostPID: false
   privileged: false
-  runAsUser:
-    rule: RunAsAny
-  seLinux:
-    rule: RunAsAny
-  supplementalGroups:
-    ranges:
-      - max: 65535
-        min: 1
-    rule: MustRunAs
+  allowPrivilegeEscalation: false
   volumes:
-    - emptyDir
-    - configMap
-    - secret
+    - 'emptyDir'
+    - 'configMap'
+    - 'secret'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+
 ---
-apiVersion: rbac.authorization.k8s.io/v1
+# Copyright 2020 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: tekton-pipelines-admin
+  name: tekton-pipelines-controller-cluster-access
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - pods/log
-      - namespaces
-      - secrets
-      - events
-      - serviceaccounts
-      - configmaps
-      - persistentvolumeclaims
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - apps
-    resources:
-      - deployments/finalizers
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - admissionregistration.k8s.io
-    resources:
-      - mutatingwebhookconfigurations
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - tekton.dev
-    resources:
-      - tasks
-      - clustertasks
-      - taskruns
-      - pipelines
-      - pipelineruns
-      - pipelineresources
-      - conditions
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - tekton.dev
-    resources:
-      - taskruns/finalizers
-      - pipelineruns/finalizers
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - tekton.dev
-    resources:
-      - tasks/status
-      - clustertasks/status
-      - taskruns/status
-      - pipelines/status
-      - pipelineruns/status
-      - pipelineresources/status
-    verbs:
-      - get
-      - list
-      - create
-      - update
-      - delete
-      - patch
-      - watch
-  - apiGroups:
-      - policy
-    resourceNames:
-      - tekton-pipelines
-    resources:
-      - podsecuritypolicies
-    verbs:
-      - use
+  - apiGroups: [""]
+    # Namespace access is required because the controller timeout handling logic
+    # iterates over all namespaces and times out any PipelineRuns that have expired.
+    # Pod access is required because the taskrun controller wants to be updated when
+    # a Pod underlying a TaskRun changes state.
+    resources: ["namespaces", "pods"]
+    verbs: ["list", "watch"]
+    # Controller needs cluster access to all of the CRDs that it is responsible for
+    # managing.
+  - apiGroups: ["tekton.dev"]
+    resources: ["tasks", "clustertasks", "taskruns", "pipelines", "pipelineruns", "pipelineresources",
+                "conditions"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  - apiGroups: ["tekton.dev"]
+    resources: ["taskruns/finalizers", "pipelineruns/finalizers"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  - apiGroups: ["tekton.dev"]
+    resources: ["tasks/status", "clustertasks/status", "taskruns/status", "pipelines/status",
+                "pipelineruns/status", "pipelineresources/status"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  - apiGroups: ["policy"]
+    resources: ["podsecuritypolicies"]
+    resourceNames: ["tekton-pipelines"]
+    verbs: ["use"]
 ---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  # This is the access that the controller needs on a per-namespace basis.
+  name: tekton-pipelines-controller-tenant-access
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "secrets", "events", "serviceaccounts", "configmaps",
+                "persistentvolumeclaims", "limitranges"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+    # Unclear if this access is actually required.  Simply a hold-over from the previous
+    # incarnation of the controller's ClusterRole.
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments/finalizers"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tekton-pipelines-webhook-cluster-access
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+rules:
+  - # The webhook needs to be able to list and update customresourcedefinitions,
+    # mainly to update the webhook certificates.
+    apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions", "customresourcedefinitions/status"]
+    verbs: ["get", "list", "update", "patch", "watch"]
+  - apiGroups: ["admissionregistration.k8s.io"]
+    # The webhook performs a reconciliation on these two resources and continuously
+    # updates configuration.
+    resources: ["mutatingwebhookconfigurations", "validatingwebhookconfigurations"]
+    # knative starts informers on these things, which is why we need get, list and watch.
+    verbs: ["list", "watch"]
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["mutatingwebhookconfigurations"]
+    # This mutating webhook is responsible for applying defaults to tekton objects
+    # as they are received.
+    resourceNames: ["webhook.pipeline.tekton.dev"]
+    # When there are changes to the configs or secrets, knative updates the mutatingwebhook config
+    # with the updated certificates or the refreshed set of rules.
+    verbs: ["get", "update"]
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["validatingwebhookconfigurations"]
+    # validation.webhook.pipeline.tekton.dev performs schema validation when you, for example, create TaskRuns.
+    # config.webhook.pipeline.tekton.dev validates the logging configuration against knative's logging structure
+    resourceNames: ["validation.webhook.pipeline.tekton.dev", "config.webhook.pipeline.tekton.dev"]
+    # When there are changes to the configs or secrets, knative updates the validatingwebhook config
+    # with the updated certificates or the refreshed set of rules.
+    verbs: ["get", "update"]
+  - apiGroups: ["policy"]
+    resources: ["podsecuritypolicies"]
+    resourceNames: ["tekton-pipelines"]
+    verbs: ["use"]
+
+---
+# Copyright 2020 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tekton-pipelines-controller
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["list", "watch"]
+  - # The controller needs access to these configmaps for logging information and runtime configuration.
+    apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
+    resourceNames: ["config-logging", "config-observability", "config-artifact-bucket",
+                    "config-artifact-pvc", "feature-flags", "config-leader-election"]
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tekton-pipelines-webhook
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["list", "watch"]
+  - # The webhook needs access to these configmaps for logging information.
+    apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
+    resourceNames: ["config-logging", "config-observability"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["list", "watch"]
+  - # The webhook daemon makes a reconciliation loop on webhook-certs. Whenever
+    # the secret changes it updates the webhook configurations with the certificates
+    # stored in the secret.
+    apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "update"]
+    resourceNames: ["webhook-certs"]
+---
+# Copyright 2019 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tekton-pipelines-controller
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-pipelines-webhook
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
 
+---
+# Copyright 2019 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: tekton-pipelines-controller-cluster-access
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+subjects:
+  - kind: ServiceAccount
+    name: tekton-pipelines-controller
+    namespace: tekton-pipelines
+roleRef:
+  kind: ClusterRole
+  name: tekton-pipelines-controller-cluster-access
+  apiGroup: rbac.authorization.k8s.io
+---
+# If this ClusterRoleBinding is replaced with a RoleBinding
+# then the ClusterRole would be namespaced. The access described by
+# the tekton-pipelines-controller-tenant-access ClusterRole would
+# be scoped to individual tenant namespaces.
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: tekton-pipelines-controller-tenant-access
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+subjects:
+  - kind: ServiceAccount
+    name: tekton-pipelines-controller
+    namespace: tekton-pipelines
+roleRef:
+  kind: ClusterRole
+  name: tekton-pipelines-controller-tenant-access
+  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: tekton-pipelines-controller-admin
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: tekton-pipelines-admin
+  name: tekton-pipelines-webhook-cluster-access
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
 subjects:
   - kind: ServiceAccount
-    namespace: {{ .Release.Namespace }}
-    name: tekton-pipelines-controller
+    name: tekton-pipelines-webhook
+    namespace: tekton-pipelines
+roleRef:
+  kind: ClusterRole
+  name: tekton-pipelines-webhook-cluster-access
+  apiGroup: rbac.authorization.k8s.io
+
 ---
+# Copyright 2020 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: tekton-pipelines-controller
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+subjects:
+  - kind: ServiceAccount
+    name: tekton-pipelines-controller
+    namespace: tekton-pipelines
+roleRef:
+  kind: Role
+  name: tekton-pipelines-controller
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: tekton-pipelines-webhook
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/component: webhook
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+subjects:
+  - kind: ServiceAccount
+    name: tekton-pipelines-webhook
+    namespace: tekton-pipelines
+roleRef:
+  kind: Role
+  name: tekton-pipelines-webhook
+  apiGroup: rbac.authorization.k8s.io
+
+
+
+
+---
+# Copyright 2019 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  labels:
-    rbac.authorization.k8s.io/aggregate-to-admin: "true"
-    rbac.authorization.k8s.io/aggregate-to-edit: "true"
   name: tekton-aggregate-edit
+  labels:
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
 rules:
   - apiGroups:
       - tekton.dev
@@ -192,12 +424,28 @@ rules:
       - watch
 
 ---
+# Copyright 2019 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  labels:
-    rbac.authorization.k8s.io/aggregate-to-view: "true"
   name: tekton-aggregate-view
+  labels:
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/part-of: tekton-pipelines
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
 rules:
   - apiGroups:
       - tekton.dev
@@ -212,3 +460,6 @@ rules:
       - get
       - list
       - watch
+
+
+

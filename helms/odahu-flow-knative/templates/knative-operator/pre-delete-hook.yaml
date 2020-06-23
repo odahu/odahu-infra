@@ -1,0 +1,38 @@
+{{- if and .Values.knativeOperator.enabled .Values.knativeOperator.cleanupCustomResources.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "knative-operator.fullname" . }}-operator-cleanup
+  namespace: {{ template "knative-operator.namespace" . }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-delete-policy": hook-succeeded
+  labels:
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+spec:
+  template:
+    metadata:
+      name: {{ template "knative-operator.fullname" . }}-operator-cleanup
+      labels:
+        app: {{ template "knative-operator.name" . }}-operator
+        {{- include "knative-operator.labels" . | indent 8 }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      {{- if .Values.knativeOperator.rbac.create }}
+      serviceAccountName: {{ template "knative-operator.serviceAccountName" . }}
+      {{- end }}
+      restartPolicy: OnFailure
+      containers:
+      - name: cleanup
+        image: "{{ .Values.knativeOperator.cleanupCustomResources.jobImage.repository }}:{{ .Values.knativeOperator.cleanupCustomResources.jobImage.tag }}"
+        imagePullPolicy: "{{ .Values.knativeOperator.cleanupCustomResources.jobImage.pullPolicy }}"
+        command:
+        - /bin/bash
+        - -c
+        - >
+            /usr/local/bin/kubectl delete knativeeventings --all &&
+             /usr/local/bin/kubectl delete knativeservings --all
+{{- end }}

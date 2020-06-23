@@ -1,0 +1,14 @@
+{{- if and .Values.knativeOperator.enabled .Values.knative.eventing.create }}
+apiVersion: operator.knative.dev/v1alpha1
+kind: KnativeEventing
+metadata:
+  name: knative-eventing
+  namespace: {{ template "knative-eventing.namespace" . }}
+  labels:
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+{{- if .Values.knative.eventing.spec }}
+spec:
+  {{- toYaml .Values.knative.eventing.spec | nindent 2 }}
+{{- end }}
+{{- end }}
