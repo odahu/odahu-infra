@@ -1,19 +1,4 @@
 {{/* vim: set filetype=mustache: */}}
-{{/*
-Expand the name of the chart.
-*/}}
-{{- define "consul.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-*/}}
-{{- define "consul.fullname" -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
 
 {{/*
 Expand the name of the chart.
@@ -30,14 +15,3 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
-
-{{/*
-Create dex Ingress auth annotations
-*/}}
-{{- define "dex-ingress-annotations" }}
-    {{- if .Values.auth.enabled -}}
-    {{- range $key, $value := .Values.auth.annotations }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
-    {{- end }}
-{{- end }}
