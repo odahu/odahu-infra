@@ -10,154 +10,54 @@
 imagesRegistry: odahu/
 
 fluentd:
+
   resources:
     limits:
       memory: 200Mi
     requests:
       memory: 100Mi
 
-imagePullSecrets:
-  - name: repo-json-key
+  tolerations:
+  - effect: NoSchedule
+    operator: Exists
+
+  # Extra annotations for the fluentd daemonSet pods
+  #
+  extraAnnotations: {}
+
+  # Extra environment variables for the fluentd daemonSet pods
+  # extraEnvs:
+  # - name: FOO
+  #   value: bar
+  #
+  extraEnvs: []
+
+  # List of name-value pairs to be added to `{{ .Release.Name }}-secret` k8s Secret resource
+  # extraSecrets:
+  # - name: SECRET_VAR
+  #   value: supersecret
+  #
+  extraSecrets: []
+
+  # Common fluentd configuration
+  # configData:
+  #   fluent.conf: |
+  #     @include source-config.inc
+  #     @include filters-config.inc
+  #     <match **>
+  #       # Drop everything by default
+  #       @type null
+  #     </match>
+  configData: {}
+
+# List of secrets for accessing to image registry (if any)
+# imagePullSecrets:
+# - name: some-registry-secret
+#
+imagePullSecrets: []
 
 nameOverride: ""
 fullnameOverride: ""
-
-output:
-  # Where feedback data should be stored
-  # Valid values:
-  # s3 - AWS S3
-  # gcs - Google Cloud Storage
-  # azureblob - Azure Blob Storage
-  target: "s3"
-
-  # Detail configuration for storing on GCS
-  gcs:
-    # Type of authorization on GCS
-    # Valid values are:
-    # - sa - requires k8s-gke-service-account-assigner to be installed in cluster,
-    #        adds annotation "accounts.google.com/service-account" to FluentD Pod
-    #        value of annotation could be specified in .feedback.output.gcs.customSA
-    # - keyfile - requires Google Cloud Service Account with GCS permissions.
-    authorization: "sa"
-
-    # Custom name for Service Account for sa-based authorization mode of FluentD
-    # For details see authorization directive above
-    # By default "<.ingress.globalDomain>-<.Release.Namespace>-collector-sa" is used
-    # Type: string
-    # customSA: ~
-
-    # GCS bucket name
-    # Type: string
-    bucket: "odahuFlow-test-store"
-
-  # Detail configuration for storing on S3
-  s3:
-    # Type of authorization on S3
-    # Valid values are:
-    # - iam - requires kube2iam to be installed in cluster,
-    #         adds annotation "iam.amazonaws.com/role" to FluentD Pod
-    #         value of annotation could be specified in .feedback.output.s3.customIAMRole
-    # - secret - provide AWS Key ID and AWS Secret Key in ENV variables for FluentD server
-    #            AWS Key ID and AWS Secret Key should be specified in
-    #            .feedback.output.s3.AWSKeyID and .feedback.output.s3.AWSSecretKey
-    authorization: "iam"
-
-    # Custom name for IAM for iam-based authorization mode of FluentD
-    # For details see authorization directive above
-    # By default "<.ingress.globalDomain>-<.Release.Namespace>-collector-role" is used
-    # Type: string
-    #customIAMRole: ~
-
-    # AWS Key ID for secret-based authorization mode of FluentD
-    # For details see authorization directive above
-    # Type: string
-    #AWSKeyID: ~
-
-    # AWS Secret Key for secret-based authorization mode of FluentD
-    # For details see authorization directive above
-    # Type: string
-    #AWSSecretKey: ~
-
-    # S3 bucket name
-    # Type: string
-    bucket: ~
-
-    # S3 region
-    # Type: string
-    region: ~
-
-  # Detail configuration for storing data in Azure Blob storage
-  azureblob:
-    # Type of authorization in Azure Blob storage
-    # Valid values are:
-    #   - accesskey
-    #   - sastoken
-    authorization: "sastoken"
-
-    # Name of Azure Storage Account
-    # Type: string
-    #AzureStorageAccount: ~
-
-    # One of two keys that used to authorize access to Azure storage account
-    # Type: string
-    #AzureStorageAccessKey: ~
-
-    # A shared access signature (SAS) is a signed URI that points to one or more storage
-    # resources and includes a token that contains a special set of query parameters.
-    # This variable should contain SAS token to Azure Blob storage service account.
-    # Type: string
-    #AzureStorageSasToken: ~
-
-    # Azure Blob container name
-    # Type: string
-    bucket: ~
-
-  # Storage type
-  # Type: string
-  # Valid values:
-  # - gzip (default)
-  # - json
-  # - text
-  storeAs: "text"
-
-  # Storage format
-  # Type: string
-  # Valid values:
-  # - out_file (default)
-  # - json
-  # - ltsv
-  # - single_value
-  format: "json"
-
-  # Directory for data storing
-  # Type: string
-  path: "logs/%Y/%m/%d/#{ENV['FLUENTD_NODE_NAME']}/containers/${tag}"
-
-  # Format of file names
-  # Type: string
-  objectKeyFormat: "%{path}/%{index}.%{file_extension}"
-
-  # Slicing format
-  # Type: string
-  timeSliceFormat: "%Y%m%d%H"
-
-  # Slicing wait time
-  # Type: string
-  timeSliceWait: "5m"
-
-  # Buffering (chunking)
-  buffering:
-    # Chunks length (window size)
-    # Type: string
-    timekey: 1m
-
-    # Delay for flush (after end of window)
-    # Type: string
-    timekeyWait: 0s
-
-    # Temporary buffering location
-    # Type: string
-    path: /tmp
 
 serviceAccount:
   # Specifies whether a service account should be created
