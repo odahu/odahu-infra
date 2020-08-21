@@ -5,7 +5,7 @@ keywords:
 - odahu-flow
 - logs
 maintainers:
-- email: helm-charts@odahu.org
-  name: ODAHU Team
+- name: ODAHU Team
+  url: https://odahu.org
 name: odahu-flow-kibana-loader
 version: 0.0.1
