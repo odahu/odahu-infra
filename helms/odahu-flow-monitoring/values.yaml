@@ -27,9 +27,6 @@ prometheus-operator:
       tls:
         - secretName: "odahuflow-test.org-tls"
           hosts: ["alertmanager.odahuflow-test.org"]
-      annotations:
-        nginx.ingress.kubernetes.io/auth-signin: "https://auth.odahuflow.epm.org/oauth2/start?rd=https://$host$request_uri$is_args$args"
-        nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.kube-system.svc.cluster.local:4180/oauth2/auth"
     alertmanagerSpec:
       resources:
         limits:
@@ -41,7 +38,6 @@ prometheus-operator:
       storageSpec:
         volumeClaimTemplate:
           spec:
-            storageClassName: gp2
             accessModes: ["ReadWriteOnce"]
             resources:
               requests:
@@ -55,9 +51,6 @@ prometheus-operator:
       tls:
         - secretName: "odahuflow-test.org-tls"
           hosts: ["prometheus.odahuflow-test.org"]
-      annotations:
-        nginx.ingress.kubernetes.io/auth-signin: "https://auth.odahuflow.epm.org/oauth2/start?rd=https://$host$request_uri$is_args$args"
-        nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.kube-system.svc.cluster.local:4180/oauth2/auth"
     prometheusSpec:
       resources:
         limits:
@@ -75,7 +68,6 @@ prometheus-operator:
       storageSpec:
         volumeClaimTemplate:
           spec:
-            storageClassName: gp2
             accessModes: ["ReadWriteOnce"]
             resources:
               requests:
@@ -398,8 +390,6 @@ prometheus-operator:
       datasources:
         defaultDatasourceEnabled: false
 
-grafana:
-  enabled: false
 coreDns:
   enabled: false
 
@@ -408,9 +398,7 @@ odahuflow-grafana:
   defaultDashboardsEnabled: true
   fullnameOverride: grafana
   image:
-    tag: 6.4.4
-  deploymentStrategy:
-    type: Recreate
+    tag: 7.1.5
   adminUser: grafana_admin
   adminPassword: grafana_password
   resources:
@@ -432,13 +420,6 @@ odahuflow-grafana:
   serviceMonitor:
     selfMonitor: true
 
-  persistence:
-    enabled: true
-    initChownData: true
-    storageClassName: gp2
-    accessModes:
-    - ReadWriteOnce
-    size: 10Gi
   ingress:
     enabled: true
     hosts:
@@ -446,25 +427,13 @@ odahuflow-grafana:
     tls:
       - secretName: "odahuflow-test.org-tls"
         hosts: ["grafana.odahuflow-test.org"]
-    annotations:
-      nginx.ingress.kubernetes.io/auth-signin: "https://auth.odahuflow.epm.org/oauth2/start?rd=https://$host$request_uri$is_args$args"
-      nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.kube-system.svc.cluster.local:4180/oauth2/auth"
   env:
     GF_AUTH_ANONYMOUS_ENABLED: "true"
-    GF_SECURITY_ALLOW_EMBEDDING: "true"
 
   dashboardProviders:
     dashboardproviders.yaml:
       apiVersion: 1
       providers:
-      - name: 'default'
-        orgId: 1
-        folder: ''
-        type: file
-        disableDeletion: false
-        editable: true
-        options:
-          path: /tmp/dashboards/default
       - name: 'Istio'
         orgId: 1
         folder: 'Istio'
