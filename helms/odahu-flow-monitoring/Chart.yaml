@@ -1,30 +1,20 @@
 name: odahu-flow-monitoring
 apiVersion: v2
-version: 0.0.1
-appVersion: 1.7.1
-description: odahuflow monitoring
+version: 0.0.2
+appVersion: 0.0.2
+description: ODAHU-flow monitoring
 dependencies:
-  - name: grafana
-    alias: odahuflow-grafana
-    version: "4.0.4"
-    type: application
-    repository: "https://kubernetes-charts.storage.googleapis.com"
-  - name: prometheus-operator
-    version: "8.7.0"
-    type: application
-    repository: "https://kubernetes-charts.storage.googleapis.com"
+- name: grafana
+  alias: odahuflow-grafana
+  version: "5.5.5"
+  type: application
+  repository: "https://kubernetes-charts.storage.googleapis.com"
+- name: prometheus-operator
+  version: "8.7.0"
+  type: application
+  repository: "https://kubernetes-charts.storage.googleapis.com"
 keywords:
 - ML
 maintainers:
-- name: Dmitrii Suslov
-  email: suslov.dimitriy@gmail.com
-- name: Vlad Tokarev
-  email: vlad.tokarev.94@gmail.com
-- name: Dmitriy Karbyshev
-  email: karbyshevds@gmail.com
-- name: Max Kochubey
-  email: maxkochubey@gmail.com
-- name: Kirill Makhonin
-  email: kirill@makhonin.biz
-- name: Vitalik Solodilov
-  email: mcdkr@yandex.ru
+- name: ODAHU Team
+  url: https://odahu.org
