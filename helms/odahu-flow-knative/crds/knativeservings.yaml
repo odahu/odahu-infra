@@ -58,6 +58,19 @@ spec:
         spec:
           description: Spec defines the desired state of KnativeServing
           properties:
+            version:
+              description: The version of Knative Serving to be installed
+              type: string
+            manifests:
+              description: A list of serving manifests, which will be installed by
+                the operator
+              type: array
+              items:
+                type: object
+                properties:
+                  URL:
+                    description: The link of the manifest URL
+                    type: string
             config:
               additionalProperties:
                 additionalProperties:
@@ -177,6 +190,9 @@ spec:
         status:
           description: Status defines the observed state of KnativeServing
           properties:
+            observedGeneration:
+              description: The generation last processed by the controller
+              type: integer
             conditions:
               description: The latest available observations of a resource's current
                 state.
@@ -213,6 +229,12 @@ spec:
             version:
               description: The version of the installed release
               type: string
+            manifests:
+              description: The list of serving manifests, which have been installed
+                by the operator
+              type: array
+              items:
+                type: string
           type: object
   version: v1alpha1
   versions:
