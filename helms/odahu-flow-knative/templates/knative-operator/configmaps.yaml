@@ -40,12 +40,12 @@ metadata:
   namespace: {{ template "knative-operator.namespace" . }}
   labels:
     serving.knative.dev/release: "v0.17.0"
-    app: { { template "knative-operator.name" . } }-operator
+    app: {{ template "knative-operator.name" . }}-operator
     {{- include "knative-operator.labels" . | indent 4 }}
 
     {{- if .Values.knativeOperator.config.features }}
     data:
-    {{- toYaml .Values.knativeOperator.config.features | nindent 6 }}
+      {{- toYaml .Values.knativeOperator.config.features | nindent 6 }}
 
     {{- else }}
     data: {}
