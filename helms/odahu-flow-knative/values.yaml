@@ -171,6 +171,10 @@ knativeOperator:
       #         "callerEncoder": ""
       #       }
       #     }
+    features:
+      kubernetes.podspec-affinity: "enabled"
+      kubernetes.podspec-nodeselector: "enabled"
+      kubernetes.podspec-tolerations: "enabled"
 
 knative:
   serving:

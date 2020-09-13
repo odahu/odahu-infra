@@ -44,7 +44,7 @@ metadata:
     {{- include "knative-operator.labels" . | indent 4 }}
 {{- if .Values.knativeOperator.config.features }}
 data:
-  {{- toYaml .Values.knativeOperator.config.features | nindent 6 }}
+  {{- toYaml .Values.knativeOperator.config.features | nindent 2 }}
 {{- else }}
 data: {}
 {{- end }}
