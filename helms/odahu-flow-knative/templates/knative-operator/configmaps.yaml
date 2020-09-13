@@ -43,10 +43,10 @@ metadata:
     app: {{ template "knative-operator.name" . }}-operator
     {{- include "knative-operator.labels" . | indent 4 }}
 
-    {{- if .Values.knativeOperator.config.features }}
-    data:
-      {{- toYaml .Values.knativeOperator.config.features | nindent 6 }}
+  {{- if .Values.knativeOperator.config.features }}
+  data:
+    {{- toYaml .Values.knativeOperator.config.features | nindent 6 }}
 
-    {{- else }}
-    data: {}
-    {{- end }}
+  {{- else }}
+  data: {}
+  {{- end }}
