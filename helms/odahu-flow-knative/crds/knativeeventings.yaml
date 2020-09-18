@@ -58,6 +58,19 @@ spec:
         spec:
           description: Spec defines the desired state of KnativeEventing
           properties:
+            version:
+              description: The version of Knative Eventing to be installed
+              type: string
+            manifests:
+              description: A list of eventing manifests, which will be installed by
+                the operator
+              type: array
+              items:
+                type: object
+                properties:
+                  URL:
+                    description: The link of the manifest URL
+                    type: string
             config:
               additionalProperties:
                 additionalProperties:
@@ -94,7 +107,7 @@ spec:
                         type: string
             defaultBrokerClass:
               description: The default broker type to use for the brokers Knative
-                creates. If no value is provided, ChannelBasedBroker will be used.
+                creates. If no value is provided, MTChannelBasedBroker will be used.
               type: string
             resources:
               description: A mapping of deployment name to resource requirements
@@ -135,9 +148,19 @@ spec:
                       ephemeral-storage:
                         type: string
                         pattern: ^([+-]?[0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$
+            sinkBindingSelectionMode:
+              description: Specifies the selection mode for the sinkbinding webhook.
+                If the value is `inclusion`, only namespaces/objects labelled as `bindings.knative.dev/include:true`
+                will be considered. If `exclusion` is selected, only `bindings.knative.dev/exclude:true`
+                label is checked and these will NOT be considered. The default is
+                `exclusion`.
+              type: string
           type: object
         status:
           properties:
+            observedGeneration:
+              description: The generation last processed by the controller
+              type: integer
             conditions:
               description: The latest available observations of a resource's current
                 state.
@@ -174,6 +197,12 @@ spec:
             version:
               description: The version of the installed release
               type: string
+            manifests:
+              description: The list of eventing manifests, which have been installed
+                by the operator
+              type: array
+              items:
+                type: string
           type: object
   version: v1alpha1
   versions:

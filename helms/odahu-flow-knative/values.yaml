@@ -22,7 +22,7 @@ knativeOperator:
     create: true
 
   # Knative-operator image
-  image: gcr.io/knative-releases/knative.dev/operator/cmd/operator@sha256:e94d8d1c739205b5d5929e5cd49f1e1d4007a76e1aae0a6988ce15f21341819e
+  image: gcr.io/knative-releases/knative.dev/operator/cmd/operator@sha256:17c0b3bce1fc27d7a8d3b37f44f862e6f26a776f03d4a19469440f8dab1d7778
   pullPolicy: IfNotPresent
 
   # Clean up custom resources created by Knative operator
@@ -171,6 +171,10 @@ knativeOperator:
       #         "callerEncoder": ""
       #       }
       #     }
+    features:
+      kubernetes.podspec-affinity: "enabled"
+      kubernetes.podspec-nodeselector: "enabled"
+      kubernetes.podspec-tolerations: "enabled"
 
 knative:
   serving:

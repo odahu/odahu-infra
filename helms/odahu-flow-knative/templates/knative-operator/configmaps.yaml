@@ -31,3 +31,20 @@ data:
 {{- else }}
 data: {}
 {{- end }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-features
+  namespace: {{ template "knative-operator.namespace" . }}
+  labels:
+    serving.knative.dev/release: "v0.17.0"
+    app: {{ template "knative-operator.name" . }}-operator
+    {{- include "knative-operator.labels" . | indent 4 }}
+{{- if .Values.knativeOperator.config.features }}
+data:
+  {{- toYaml .Values.knativeOperator.config.features | nindent 2 }}
+{{- else }}
+data: {}
+{{- end }}
