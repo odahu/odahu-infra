@@ -22,5 +22,15 @@ allow {
 
 allow {
 	parsed_input.action == "GET"
+  parsed_input.resource == "/healthz"
+}
+
+allow {
+	parsed_input.action == "GET"
+  parsed_input.resource == "/metrics"
+}
+
+allow {
+	parsed_input.action == "GET"
   re_match("/swagger*", parsed_input.resource)
 }
