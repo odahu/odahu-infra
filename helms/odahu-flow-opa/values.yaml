@@ -9,7 +9,7 @@ replicaCount: 1
 
 image:
   repository: openpolicyagent/opa
-  tag: 0.16.1-istio-4
+  tag: 0.23.2-istio-2
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
