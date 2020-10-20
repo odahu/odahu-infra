@@ -1,0 +1,91 @@
+---
+############################################################
+# OPA admission control policy for injecting OPA-Istio.
+############################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-policy-inject
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "odahu-flow-opa.labels" . | nindent 4 }}
+data:
+  inject.rego: |
+    package istio
+
+    inject = {
+      "apiVersion": "admission.k8s.io/v1beta1",
+      "kind": "AdmissionReview",
+      "response": {
+        "allowed": true,
+        "patchType": "JSONPatch",
+        "patch": base64.encode(json.marshal(patch)),
+      },
+    }
+
+    patch = [{
+      "op": "add",
+      "path": "/spec/containers/-",
+      "value": opa_container,
+    }, {
+      "op": "add",
+      "path": "/spec/volumes/-",
+      "value": opa_config_volume,
+    }, {
+      "op": "add",
+      "path": "/spec/volumes/-",
+      "value": opa_common_volume,
+    }, {
+      "op": "add",
+      "path": "/spec/volumes/-",
+      "value": opa_policy_volume,
+    }]
+
+    opa_container = {
+      "image": "{{ .Values.image.repository }}:{{ .Values.image.sidecarTag }}",
+      "name": "opa-istio",
+      "args": [
+        "run",
+        "--server",
+        "--config-file=/config/config.yaml",
+        "--ignore=.*",
+        "/common-policies",
+        "/app-policies",
+      ],
+      "volumeMounts": [{
+        "mountPath": "/config",
+        "name": "opa-istio-config",
+      }, {
+        "mountPath": "/app-policies",
+        "name": "opa-policy"
+      }, {
+        "mountPath": "/common-policies",
+        "name": "opa-policy-common",
+      }],
+      "readinessProbe": {
+        "httpGet": {
+          "path": "/health?bundles",
+          "port": 8181,
+        },
+      },
+    }
+
+    opa_config_volume = {
+      "name": "opa-istio-config",
+      "configMap": {"name": "{{ .Release.Namespace }}-sidecar-config"},
+    }
+
+    opa_policy_volume = {
+      "name": "opa-policy",
+      "configMap": {"name": policy_config_map},
+    }
+
+    opa_common_volume = {
+      "name": "opa-policy-common",
+      "configMap": {"name": "{{ .Release.Name }}-policy-common"},
+    }
+
+    default policy_config_map = "{{ .Release.Name }}-policy-default"
+    policy_config_map = input.request.object.metadata.labels["opa-policy-config-map-name"] {
+      count(input.request.object.metadata.labels["opa-policy-config-map-name"]) > 0
+    }

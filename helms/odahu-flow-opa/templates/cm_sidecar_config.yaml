@@ -1,0 +1,25 @@
+{{- range .Values.protectedNamespaces }}
+############################################################
+# Sidecar configuration
+############################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "odahu-flow-opa.labels" $ | nindent 4 }}
+  name: {{ $.Release.Name }}-sidecar-config
+  namespace: {{ . }}
+data:
+  config.yaml: |
+    {{- if $.Values.opa.config.decisionLogsEnabled }}
+    decision_logs:
+      console: true
+    {{- end }}
+    plugins:
+      envoy_ext_authz_grpc:
+          addr: :9191
+          query: data.odahu.core.allow
+          dry-run: {{ $.Values.opa.config.dryRun }}
+          enable-reflection: true
+---
+{{- end }}

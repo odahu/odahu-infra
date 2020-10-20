@@ -9,7 +9,8 @@ replicaCount: 1
 
 image:
   repository: openpolicyagent/opa
-  tag: 0.23.2-istio-2
+  tag: 0.23.2
+  sidecarTag: 0.23.2-envoy-2
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -101,5 +102,10 @@ authz:
   targetUri: ""
   activationSelector: "odahu-flow-authorization"
 
+# Webhook server tls settings
+tls:
+  ca: ""
+  key: ""
+  cert: ""
 
-
+protectedNamespaces: []

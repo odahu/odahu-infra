@@ -71,10 +71,6 @@ spec:
               timeout:
                 seconds: 20
               google_grpc:
-                {{- if .Values.authz.targetUri }}
-                target_uri: {{ .Values.authz.targetUri }}
-                {{- else }}
-                target_uri: {{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9191
-                {{- end}}
+                target_uri: 127.0.0.1:9191
                 stat_prefix: "ext_authz"
 

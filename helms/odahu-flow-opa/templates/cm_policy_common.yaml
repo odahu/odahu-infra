@@ -1,0 +1,19 @@
+{{- range .Values.protectedNamespaces }}
+############################################################
+# Common OPA policy that will be injected
+# to every sidecar in namespace
+############################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-policy-common
+  namespace: {{ . }}
+  labels:
+    {{- include "odahu-flow-opa.labels" $ | nindent 4 }}
+data:
+  {{- range $path, $content := $.Files.Glob "policies/*.rego" }}
+  {{ base $path }}: |
+    {{ $content | toString | nindent 4 }}
+  {{ end }}
+---
+{{- end }}
