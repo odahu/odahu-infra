@@ -3,21 +3,23 @@ package odahu.mapper
 import data.odahu.roles
 
 roles_map = {
-	"odahu_admin": roles.admin,
+  "odahu_admin": roles.admin,
   "odahu_data_scientist": roles.data_scientist,
   "odahu_viewer": roles.viewer
 }
 
 jwt = input.attributes.metadata_context.filter_metadata["envoy.filters.http.jwt_authn"].fields.jwt_payload
 
-keycloak_user_roles[role]{
-	role = jwt.Kind.StructValue.fields.realm_access.Kind.StructValue.fields.roles.Kind.ListValue.values[_].Kind.StringValue
+raw_roles[role]{
+  role = jwt.Kind.StructValue.fields.realm_access.Kind.StructValue.fields.roles.Kind.ListValue.values[_].Kind.StringValue
 }
 
 user_roles[role]{
-	role = roles_map[keycloak_user_roles[_]]
+  role = roles_map[raw_roles[_]]
 }
 
+
+required_role = input.attributes.request.http.headers["x-odahu-required-role"]
 
 parsed_input = {
   "action": input.attributes.request.http.method,
