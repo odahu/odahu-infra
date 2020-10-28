@@ -1,4 +1,3 @@
-{{- if .Values.enabled }}
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
@@ -15,4 +14,3 @@ spec:
       name: https
       protocol: HTTPS
   resolution: DNS
-{{- end }}

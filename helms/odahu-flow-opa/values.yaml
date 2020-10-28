@@ -2,14 +2,13 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# enabled is bool trigger to activate/deactivate chart resources
-enabled: true
 
 replicaCount: 1
 
 image:
   repository: openpolicyagent/opa
-  tag: 0.23.2-istio-2
+  tag: 0.23.2
+  sidecarTag: 0.23.2-envoy-2
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -80,10 +79,6 @@ opa:
     # if decision-logs-enabled: true then info about PDP decisions will be logged in stdout of OPA container
     decisionLogsEnabled: true
     # list of rego policies encoded in base64
-  policies: {}
-#  policies:
-#    file1: ".rego policy content"
-#    file2: ".rego policy content"
 
 # authn overrides configuration of envoy.filters.http.jwt_authn http filter
 authn:
@@ -94,12 +89,16 @@ authn:
   oidcJwks: ""
   oidcHost: ""
   oidcPort: 443
+  # Either localJwks or remote can be used. localJwks has a priority
   localJwks: ""
 # authz overrides configuration of envoy.ext_authz http filter
 authz:
-  # targetUri defines external authorization service
-  targetUri: ""
   activationSelector: "odahu-flow-authorization"
 
+# Webhook server tls settings
+tls:
+  ca: ""
+  key: ""
+  cert: ""
 
-
+protectedNamespaces: []

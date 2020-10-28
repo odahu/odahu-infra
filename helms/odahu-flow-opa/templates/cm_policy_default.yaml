@@ -1,0 +1,20 @@
+{{- range .Values.protectedNamespaces }}
+############################################################
+# Default OPA policy that is injected to sidecars in namespace
+# Pod has no "opa-policy-config-map-name" label that refers
+# to specific policy
+############################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-policy-default
+  namespace: {{ . }}
+  labels:
+    {{- include "odahu-flow-opa.labels" $ | nindent 4 }}
+data:
+  policy.rego: |
+    package odahu.core
+    # Deny by default
+    default allow = false
+---
+{{- end}}
