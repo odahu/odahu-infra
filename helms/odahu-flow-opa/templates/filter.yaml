@@ -44,6 +44,8 @@ spec:
               - match:
                   prefix: /healthz
               - match:
+                  prefix: /metrics
+              - match:
                   prefix: /
                 requires:
                   {{- if .Values.authn.enabled }}
