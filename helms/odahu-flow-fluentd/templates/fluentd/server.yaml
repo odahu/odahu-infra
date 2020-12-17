@@ -25,9 +25,6 @@ spec:
       labels:
         {{- include "fluentd.helm-labels" (dict "component" "fluentd" "root" .) | nindent 8 }}
     spec:
-      {{- if .Values.serviceAccount.create }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}
-      {{- end }}
       containers:
       - name: fluentd
         image: "{{ include "fluentd.image-name" (dict "root" . "service" .Values.fluentd "tpl" "%sodahu-flow-fluentd:%s") }}"

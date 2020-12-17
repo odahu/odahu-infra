@@ -32,10 +32,6 @@ data:
       aws_key_id "#{ENV['AWS_ACCESS_KEY_ID']}"
       aws_sec_key "#{ENV['AWS_SECRET_ACCESS_KEY']}"
       {{- end }}
-      {{- if eq .Values.output.s3.authorization "irsa" }}
-      <web_identity_credentials>
-      </web_identity_credentials>
-      {{- end }}
       {{- if eq .Values.output.s3.authorization "iam" }}
       <instance_profile_credentials>
       </instance_profile_credentials>
