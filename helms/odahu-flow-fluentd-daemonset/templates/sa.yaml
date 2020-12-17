@@ -4,12 +4,15 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ .Values.serviceAccount.name }}
+{{- if .Values.serviceAccount.annotations }}
+  annotations: {{ toYaml .Values.serviceAccount.annotations | nindent 4 }}
+{{- end }}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: fluentd
+  name: fluentd-daemonset
 rules:
 - apiGroups:
   - ""
@@ -25,10 +28,10 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: fluentd
+  name: fluentd-daemonset
 roleRef:
   kind: ClusterRole
-  name: fluentd
+  name: fluentd-daemonset
   apiGroup: rbac.authorization.k8s.io
 subjects:
 - kind: ServiceAccount

@@ -32,6 +32,9 @@ spec:
         app: {{ template "syncer.fullname" . }}
     spec:
       restartPolicy: Always
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
       containers:
         - name: syncer
           image: rclone/rclone:{{ .Values.rclone.version }}
