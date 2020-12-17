@@ -57,7 +57,6 @@ sync:
   s3:
     # Type of authorization on S3
     # Valid values are:
-    # - irsa - use IAM role that attached to k8s service account
     # - iam - requires kube2iam to be installed in cluster,
     #         adds annotation "iam.amazonaws.com/role" to FluentD Pod
     #         value of annotation could be specified in .feedback.output.s3.customIAMRole
@@ -95,12 +94,3 @@ sync:
     # Azure Blob container name
     # Type: string
     bucket: ~
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: odahu-syncer
-  annotations: {}
-

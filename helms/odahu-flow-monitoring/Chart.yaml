@@ -8,11 +8,11 @@ dependencies:
   alias: odahuflow-grafana
   version: "5.5.5"
   type: application
-  repository: "https://charts.helm.sh/stable"
+  repository: "https://kubernetes-charts.storage.googleapis.com"
 - name: prometheus-operator
   version: "8.7.0"
   type: application
-  repository: "https://charts.helm.sh/stable"
+  repository: "https://kubernetes-charts.storage.googleapis.com"
 keywords:
 - ML
 maintainers:
