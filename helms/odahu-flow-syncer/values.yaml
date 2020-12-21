@@ -37,6 +37,7 @@ sync:
     # - sa - requires k8s-gke-service-account-assigner to be installed in cluster,
     #        adds annotation "accounts.google.com/service-account" to FluentD Pod
     #        value of annotation could be specified in .feedback.output.gcs.customSA
+    # - gwi - use Google Cloud Container Workload Identity
     authorization: "sa"
 
     # Custom name for Service Account for sa-based authorization mode of FluentD
