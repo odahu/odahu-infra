@@ -203,6 +203,12 @@ output:
     # Type: string
     path: /tmp
 
+# List of secrets for accessing to image registry (if any)
+# imagePullSecrets:
+# - name: some-registry-secret
+#
+imagePullSecrets: []
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
