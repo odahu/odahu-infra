@@ -34,6 +34,9 @@ data:
       {{- end }}
       {{- if eq .Values.output.s3.authorization "irsa" }}
       <web_identity_credentials>
+        role_arn "#{ENV['AWS_ROLE_ARN']}"
+        role_session_name fluentd_daemonset
+        web_identity_token_file /var/run/secrets/eks.amazonaws.com/serviceaccount/token
       </web_identity_credentials>
       {{- end }}
       {{- if eq .Values.output.s3.authorization "iam" }}
