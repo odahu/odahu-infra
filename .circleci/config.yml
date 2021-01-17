@@ -23,9 +23,8 @@ workflows:
   main:
     jobs:
       - security-check
-      - build
+      - build:
           context:
             - hub.docker.com
           requires:
             - security-check
-
