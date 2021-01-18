@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  security-check:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: sudo make install-vulnerabilities-checker
+      - run:
+          name: Check
+          command: make check-vulnerabilities
+  build:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - run: make docker-build-fluentd
+
+workflows:
+  main:
+    jobs:
+      - security-check
+      - build:
+          context:
+            - hub.docker.com
+          requires:
+            - security-check

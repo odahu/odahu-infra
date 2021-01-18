@@ -18,11 +18,11 @@ docker-push-fluentd:
 
 ## install-vulnerabilities-checker: Install the vulnerabilities-checker
 install-vulnerabilities-checker:
-	./install-git-secrets-hook.sh install_binaries
+	./scripts/install-git-secrets-hook.sh install_binaries
 
 ## check-vulnerabilities: Сheck vulnerabilities in the source code
 check-vulnerabilities:
-	./install-git-secrets-hook.sh install_hooks
+	./scripts/install-git-secrets-hook.sh install_hooks
 	git secrets --scan -r
 
 ## help: Show the help message
