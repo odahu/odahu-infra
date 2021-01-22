@@ -44,6 +44,7 @@ output:
     #        adds annotation "accounts.google.com/service-account" to FluentD Pod
     #        value of annotation could be specified in .feedback.output.gcs.customSA
     # - keyfile - requires Google Cloud Service Account with GCS permissions.
+    # - gwi - Google Cloud Workload Identity
     authorization: "sa"
 
     # Custom name for Service Account for sa-based authorization mode of FluentD
@@ -99,6 +100,7 @@ output:
     # - iam - requires kube2iam to be installed in cluster,
     #         adds annotation "iam.amazonaws.com/role" to FluentD Pod
     #         value of annotation could be specified in .feedback.output.s3.customIAMRole
+    # - irsa - use IAM role that attached to k8s service account
     # - secret - provide AWS Key ID and AWS Secret Key in ENV variables for FluentD server
     #            AWS Key ID and AWS Secret Key should be specified in
     #            .feedback.output.s3.AWSKeyID and .feedback.output.s3.AWSSecretKey
@@ -200,3 +202,17 @@ output:
     # Temporary buffering location
     # Type: string
     path: /tmp
+
+# List of secrets for accessing to image registry (if any)
+# imagePullSecrets:
+# - name: some-registry-secret
+#
+imagePullSecrets: []
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: fluentd
+  annotations: {}
