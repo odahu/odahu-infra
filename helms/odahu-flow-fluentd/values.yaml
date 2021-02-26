@@ -16,13 +16,13 @@ fluentd:
 
   # Resources for each instance
   # For declaration format see https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-  resources:
-    requests:
-      cpu: "300m"
-      memory: "256Mi"
-    limits:
-      cpu: "300m"
-      memory: "512Mi"
+  # resources:
+  #   requests:
+  #     cpu: "300m"
+  #     memory: "256Mi"
+  #   limits:
+  #     cpu: "300m"
+  #     memory: "512Mi"
 
   # Input port number
   # Type: integer
