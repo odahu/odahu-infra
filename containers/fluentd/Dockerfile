@@ -31,6 +31,7 @@ RUN apk update \
  && gem install fluent-plugin-grok-parser -v 2.6.2 \
  && gem install fluent-plugin-elasticsearch -v 5.0.2 \
  && gem install fluent-plugin-kubernetes_metadata_filter -v 2.5.2 \
+ && gem install fluent-plugin-rewrite-tag-filter -v 2.4.0 \
  && git ${GIT_PARAMS} ${REPO_URL} /tmp/build-azure \
  && cd /tmp/build-azure && gem build *.gemspec && gem install *.gem \
  && apk del .build-deps \
